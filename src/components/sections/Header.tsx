@@ -245,6 +245,7 @@ export const Header = forwardRef<HTMLElement, HeaderProps>((props, ref) => {
     titleText,
     enableLogo,
     logoUrl,
+    faviconUrl,
     isShowStatsInHeader,
     enableStatsBar,
   } = useAppConfig();
@@ -254,7 +255,15 @@ export const Header = forwardRef<HTMLElement, HeaderProps>((props, ref) => {
     if (titleText) document.title = titleText;
     const description = document.querySelector('meta[name="description"]');
     description?.setAttribute("content", SITE_DESCRIPTION);
-  }, [titleText]);
+
+    let favicon = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
+    if (!favicon) {
+      favicon = document.createElement("link");
+      favicon.rel = "icon";
+      document.head.appendChild(favicon);
+    }
+    favicon.href = faviconUrl;
+  }, [titleText, faviconUrl]);
 
   return (
     <header

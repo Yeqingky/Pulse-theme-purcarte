@@ -91,6 +91,7 @@ export interface ConfigOptions {
   selectedHeaderStyle: HeaderStyle;
   enableLogo: boolean;
   logoUrl: string;
+  faviconUrl: string;
   enableTitle: boolean;
   titleText: string;
   enableSearchButton: boolean;
@@ -177,7 +178,7 @@ export const DEFAULT_CONFIG: ConfigOptions = {
     readEnv("VITE_VIDEO_BACKGROUND_URL_MOBILE") || "",
   backgroundAlignment:
     readEnv("VITE_BACKGROUND_ALIGNMENT") || "cover,top",
-  blurValue: readNumber("VITE_BLUR_VALUE", 10, 0, 100),
+  blurValue: readNumber("VITE_BLUR_VALUE", 5, 0, 100),
   blurBackgroundColor:
     readEnv("VITE_BLUR_BACKGROUND_COLOR") ||
     "rgba(255, 255, 255, 0.5)|rgba(0, 0, 0, 0.5)",
@@ -202,6 +203,10 @@ export const DEFAULT_CONFIG: ConfigOptions = {
   ),
   enableLogo: readBoolean("VITE_ENABLE_LOGO", false),
   logoUrl: readEnv("VITE_LOGO_URL") || "/assets/logo.png",
+  faviconUrl:
+    readEnv("VITE_FAVICON_URL") ||
+    readEnv("VITE_LOGO_URL") ||
+    "/assets/logo.png",
   enableTitle: readBoolean("VITE_ENABLE_TITLE", true),
   titleText: readEnv("VITE_SITE_TITLE") || "Pulse-theme-purcarte",
   enableSearchButton: readBoolean("VITE_ENABLE_SEARCH", true),

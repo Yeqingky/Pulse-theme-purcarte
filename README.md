@@ -29,6 +29,12 @@ https://example.com/api/events
 | `VITE_PULSE_SHARE_TOKEN` | 空 | 可选共享 token, 会作为 `token` 查询参数附加 |
 | `VITE_PULSE_WITH_CREDENTIALS` | `false` | 是否携带跨域凭据 |
 | `VITE_PULSE_RECONNECT_DELAY` | `3000` | SSE 重连初始延迟, 单位为毫秒 |
+| `VITE_BACKGROUND_IMAGE` | `/assets/Moonlit-Scenery.webp` | 桌面端背景图片路径或 URL, 可用 `|` 分隔浅色和深色模式图片 |
+| `VITE_BACKGROUND_IMAGE_MOBILE` | 空 | 移动端背景图片路径或 URL, 留空则复用桌面端背景 |
+| `VITE_ENABLE_LOGO` | `false` | 是否显示页面顶部 logo |
+| `VITE_LOGO_URL` | `/assets/logo.png` | 页面顶部 logo 路径或 URL |
+| `VITE_FAVICON_URL` | `/assets/logo.png` | 浏览器标签页图标路径或 URL, 留空则复用 `VITE_LOGO_URL` |
+| `VITE_BLUR_VALUE` | `5` | 磨砂玻璃模糊值, 单位为像素, 建议值 `5`-`20`, 可配置范围 `0`-`100` |
 | `VITE_SITE_TITLE` | `Pulse-theme-purcarte` | 页面标题 |
 | `VITE_SITE_DESCRIPTION` | `Pulse server monitoring dashboard.` | 页面描述 |
 | `VITE_DEFAULT_VIEW` | `grid` | 默认视图: `grid`, `compact`, `table` |

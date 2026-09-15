@@ -12,7 +12,7 @@ This repository contains the static PurCarte monitoring theme adapted for Pulse.
 - `src/contexts/LiveDataContext.tsx`: Live status state.
 - `src/hooks/useNodeListCommons.ts`: Search, tag filtering, sorting, and aggregate statistics.
 - `src/components/sections/`: Header, footer, statistics, tags, and node views.
-- `src/config/`: Build-time `VITE_*` configuration and localized text.
+- `src/config/`: Build-time `VITE_*` configuration and localized text, including configurable background image and logo URLs.
 - `src/main.tsx` and `src/pages/Home.tsx`: Application composition and the home page.
 
 ## Development and validation
@@ -39,4 +39,7 @@ The production build output is `dist`. Copy `.env.example` to `.env` for local c
 - A node is identified by `systems[].id`; its `tags` array drives the home-page tag filter.
 - `alert: true` is treated as offline. Missing live status is also displayed as offline.
 - Pulse resource strings are converted to bytes before formatting. Network speed values are received in MB/s and converted consistently for the UI.
+- Background images are configured with `VITE_BACKGROUND_IMAGE` and optionally `VITE_BACKGROUND_IMAGE_MOBILE`; empty mobile configuration falls back to the desktop image.
+- The page logo uses `VITE_LOGO_URL` when enabled, and the browser favicon uses `VITE_FAVICON_URL` with `VITE_LOGO_URL` as its fallback.
+- The frosted-glass blur value uses `VITE_BLUR_VALUE`, defaults to `5` pixels, recommends values from `5` to `20`, and accepts values from `0` to `100`.
 - The dashboard has only the home page. Do not reintroduce instance detail routes, administration, WebSocket, JSON-RPC, or server configuration writes.
