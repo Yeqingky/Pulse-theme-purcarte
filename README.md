@@ -1,17 +1,17 @@
 <div align="center">
 
-<img width="300" src="./preview.png" alt="PurCarte Theme Preview">
+<img width="300" src="./preview.png" alt="Pulse PurCarte Theme Preview">
 
-## ✨ PurCarte ✨
+## ✨ Pulse-theme-purcarte ✨
 
-一款为 [Komari](https://github.com/komari-monitor/komari) 设计的磨砂玻璃风格主题。
+一款适用于 [Pulse](https://github.com/xhhcn/Pulse/) 的磨砂玻璃风格主题。
 
 </div>
 
 ---
 
 > [!NOTE]
-> 本主题在 Gemini 的辅助下完成，融合了官方主题的部分设计与个人审美偏好，旨在提供一种简洁、美观的磨砂玻璃质感界面
+> 本项目基于 [Montia37/komari-theme-purcarte](https://github.com/Montia37/komari-theme-purcarte) 修改而来，适用于 [Pulse](https://github.com/xhhcn/Pulse/)。本主题在 Gemini 的辅助下完成，融合了官方主题的部分设计与个人审美偏好，旨在提供一种简洁、美观的磨砂玻璃质感界面。
 
 ## 🚀 快速开始
 
