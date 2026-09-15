@@ -8,12 +8,11 @@ import {
   Moon,
   Sun,
   SunMoon,
-  CircleUserIcon,
   Menu,
 } from "lucide-react";
 import { forwardRef, useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
 import { useAppConfig } from "@/config";
+import { SITE_DESCRIPTION } from "@/config/default";
 import { useTheme } from "@/hooks/useTheme";
 import { useIsMobile } from "@/hooks/useMobile";
 import {
@@ -26,19 +25,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useLocale } from "@/config/hooks";
-
 import { StatsBar } from "../sections/StatsBar";
 import type { StatsBarProps } from "../sections/StatsBar";
-import EditButton from "../settings/EditButton";
 import { Card } from "../ui/card";
-import { cn } from "@/utils";
 
 interface HeaderProps extends Partial<StatsBarProps> {
-  isPrivate?: boolean;
   searchTerm?: string;
   setSearchTerm?: (term: string) => void;
-  setIsSettingsOpen?: (isOpen: boolean) => void;
-  isSettingsOpen?: boolean;
 }
 
 const ViewModeIcons = {
@@ -171,36 +164,6 @@ const ThemeSwitcher = ({ isMobile }: { isMobile?: boolean }) => {
   );
 };
 
-const AdminButton = ({ isMobile }: { isMobile?: boolean }) => {
-  const { t } = useLocale();
-  const { enableAdminButton } = useAppConfig();
-
-  if (!enableAdminButton) return null;
-
-  if (isMobile) {
-    return (
-      <DropdownMenuItem asChild>
-        <a
-          href="/admin"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center">
-          <CircleUserIcon className="size-4 mr-2 text-primary" />
-          <span>{t("header.admin")}</span>
-        </a>
-      </DropdownMenuItem>
-    );
-  }
-
-  return (
-    <a href="/admin" target="_blank" rel="noopener noreferrer">
-      <Button variant="ghost" size="icon">
-        <CircleUserIcon className="size-5 text-primary" />
-      </Button>
-    </a>
-  );
-};
-
 const SearchBar = ({
   isMobile,
   searchTerm,
@@ -214,9 +177,7 @@ const SearchBar = ({
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { enableSearchButton } = useAppConfig();
 
-  if (!enableSearchButton || searchTerm === undefined || !setSearchTerm) {
-    return null;
-  }
+  if (!enableSearchButton) return null;
 
   if (isMobile) {
     return (
@@ -225,7 +186,7 @@ const SearchBar = ({
           <Button variant="ghost" size="icon" className="relative group">
             <Search className="size-5 text-primary" />
             {searchTerm && (
-              <span className="absolute top-0 right-0 w-1.5 h-1.5 rounded-full bg-(--accent-indicator) transform -translate-x-1/2"></span>
+              <span className="absolute top-0 right-0 w-1.5 h-1.5 rounded-full bg-(--accent-indicator) transform -translate-x-1/2" />
             )}
           </Button>
         </DropdownMenuTrigger>
@@ -238,9 +199,7 @@ const SearchBar = ({
               placeholder={t("search.placeholder")}
               className="w-full"
               value={searchTerm}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setSearchTerm(e.target.value)
-              }
+              onChange={(event) => setSearchTerm(event.target.value)}
             />
           </div>
         </DropdownMenuContent>
@@ -261,19 +220,17 @@ const SearchBar = ({
             !isSearchOpen && "invisible"
           }`}
           value={searchTerm}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setSearchTerm(e.target.value)
-          }
+          onChange={(event) => setSearchTerm(event.target.value)}
         />
       </div>
       <Button
         variant="ghost"
         size="icon"
         className="relative group"
-        onClick={() => setIsSearchOpen(!isSearchOpen)}>
+        onClick={() => setIsSearchOpen((open) => !open)}>
         <Search className="size-5 text-primary" />
         {searchTerm && (
-          <span className="absolute top-0 right-0 w-1.5 h-1.5 rounded-full bg-(--accent-indicator) transform -translate-x-1/2"></span>
+          <span className="absolute top-0 right-0 w-1.5 h-1.5 rounded-full bg-(--accent-indicator) transform -translate-x-1/2" />
         )}
       </Button>
     </>
@@ -281,15 +238,7 @@ const SearchBar = ({
 };
 
 export const Header = forwardRef<HTMLElement, HeaderProps>((props, ref) => {
-  const {
-    isPrivate,
-    searchTerm,
-    setSearchTerm,
-    setIsSettingsOpen,
-    isSettingsOpen,
-  } = props;
-  const location = useLocation();
-  const isInstancePage = location.pathname.startsWith("/instance");
+  const { searchTerm = "", setSearchTerm = () => {} } = props;
   const {
     selectedHeaderStyle,
     enableTitle,
@@ -297,57 +246,47 @@ export const Header = forwardRef<HTMLElement, HeaderProps>((props, ref) => {
     enableLogo,
     logoUrl,
     isShowStatsInHeader,
-    siteStatus,
-    isShowConfigEditButtonInLogined,
+    enableStatsBar,
   } = useAppConfig();
   const isMobile = useIsMobile();
 
   useEffect(() => {
-    if (titleText) {
-      document.title = titleText;
-    }
+    if (titleText) document.title = titleText;
+    const description = document.querySelector('meta[name="description"]');
+    description?.setAttribute("content", SITE_DESCRIPTION);
   }, [titleText]);
 
   return (
     <header
       ref={ref}
-      className={cn(
-        selectedHeaderStyle === "levitation" ? "fixed" : "sticky",
-        "top-0 left-0 right-0 flex z-10"
-      )}
-      style={{
-        right: isSettingsOpen && !isMobile ? "var(--setting-width)" : "0",
-      }}>
+      className={`${selectedHeaderStyle === "levitation" ? "fixed" : "sticky"} top-0 left-0 right-0 flex z-10`}>
       <Card className="rounded-none w-full flex items-center justify-center">
         <div className="w-(--main-width) max-w-screen-2xl py-2 flex items-center justify-between">
-          <div className="flex items-center theme-text-shadow text-accent-foreground">
-            <a href="/" className="flex items-center gap-2 text-2xl font-bold">
+          <div className="flex items-center theme-text-shadow text-accent-foreground min-w-0">
+            <a
+              href="/"
+              className="flex items-center gap-2 text-2xl font-bold min-w-0">
               {enableLogo && logoUrl && (
                 <img src={logoUrl} alt="logo" className="h-8" />
               )}
-              {enableTitle && <span>{titleText}</span>}
+              {enableTitle && <span className="truncate">{titleText}</span>}
             </a>
           </div>
 
-          {!isInstancePage &&
-            isShowStatsInHeader &&
-            !isMobile &&
-            !isPrivate && (
-              <div className="flex-1 flex justify-center">
-                <StatsBar {...(props as Required<StatsBarProps>)} />
-              </div>
-            )}
+          {enableStatsBar && isShowStatsInHeader && !isMobile && (
+            <div className="flex-1 flex justify-center">
+              <StatsBar {...(props as Required<StatsBarProps>)} />
+            </div>
+          )}
 
           <div className="flex items-center space-x-2">
             {isMobile ? (
               <>
-                {!isInstancePage && (
-                  <SearchBar
-                    isMobile
-                    searchTerm={searchTerm!}
-                    setSearchTerm={setSearchTerm!}
-                  />
-                )}
+                <SearchBar
+                  isMobile
+                  searchTerm={searchTerm}
+                  setSearchTerm={setSearchTerm}
+                />
                 <DropdownMenu modal={false}>
                   <DropdownMenuTrigger asChild>
                     <Button
@@ -355,41 +294,26 @@ export const Header = forwardRef<HTMLElement, HeaderProps>((props, ref) => {
                       size="icon"
                       className="relative group">
                       <Menu className="size-5 text-primary transition-transform duration-300 group-data-[state=open]:rotate-180" />
-                      <span className="absolute top-0 right-0 w-1.5 h-1.5 rounded-full bg-(--accent-indicator) transform -translate-x-1/2 scale-0 transition-transform duration-300 group-data-[state=open]:scale-100"></span>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
                     align="end"
                     className="purcarte-blur mt-[.5rem] border-(--accent-4)/50 rounded-xl">
-                    {!isInstancePage && <ViewModeSwitcher isMobile />}
+                    <ViewModeSwitcher isMobile />
                     <ThemeSwitcher isMobile />
-                    <AdminButton isMobile />
                   </DropdownMenuContent>
                 </DropdownMenu>
               </>
             ) : (
               <>
-                {!isInstancePage && (
-                  <>
-                    <SearchBar
-                      searchTerm={searchTerm!}
-                      setSearchTerm={setSearchTerm!}
-                    />
-                    <ViewModeSwitcher />
-                  </>
-                )}
+                <SearchBar
+                  searchTerm={searchTerm}
+                  setSearchTerm={setSearchTerm}
+                />
+                <ViewModeSwitcher />
                 <ThemeSwitcher />
-                <AdminButton />
               </>
             )}
-
-            {isShowConfigEditButtonInLogined &&
-              (siteStatus === "authenticated" ||
-                siteStatus === "private-authenticated") && (
-                <EditButton
-                  onClick={() => setIsSettingsOpen && setIsSettingsOpen(true)}
-                />
-              )}
           </div>
         </div>
       </Card>

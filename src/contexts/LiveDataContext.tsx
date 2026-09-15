@@ -5,12 +5,14 @@ import {
   useContext,
   type ReactNode,
 } from "react";
-import { getWsService } from "../services/api";
-import { useNodeData } from "./NodeDataContext";
-import type { RpcNodeStatusMap } from "../types/rpc";
+import {
+  pulseEventService,
+  pulseUpdateToStatusMap,
+} from "@/services/pulse";
+import type { PulseNodeStatusMap } from "@/types/pulse";
 
 export interface LiveDataContextType {
-  liveData: RpcNodeStatusMap | null;
+  liveData: PulseNodeStatusMap | null;
 }
 
 const LiveDataContext = createContext<LiveDataContextType | null>(null);
@@ -26,44 +28,16 @@ export const useLiveData = () => {
 
 interface LiveDataProviderProps {
   children: ReactNode;
-  enableWebSocket?: boolean;
 }
 
-export const LiveDataProvider = ({
-  children,
-  enableWebSocket = true,
-}: LiveDataProviderProps) => {
-  const [liveData, setLiveData] = useState<RpcNodeStatusMap | null>(null);
-  const { loading } = useNodeData();
-  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+export const LiveDataProvider = ({ children }: LiveDataProviderProps) => {
+  const [liveData, setLiveData] = useState<PulseNodeStatusMap | null>(null);
 
   useEffect(() => {
-    if (!loading && !initialLoadComplete) {
-      setInitialLoadComplete(true);
-    }
-  }, [loading, initialLoadComplete]);
-
-  useEffect(() => {
-    if (initialLoadComplete && enableWebSocket) {
-      const wsService = getWsService();
-
-      const handleWebSocketData = (data: any) => {
-        setLiveData(data as RpcNodeStatusMap);
-      };
-
-      const unsubscribe = wsService.subscribe(handleWebSocketData);
-      wsService.connect();
-
-      return () => {
-        unsubscribe();
-        wsService.disconnect();
-      };
-    } else {
-      const wsService = getWsService();
-      wsService.disconnect();
-      setLiveData(null);
-    }
-  }, [initialLoadComplete, enableWebSocket]);
+    return pulseEventService.subscribe((update) => {
+      setLiveData(pulseUpdateToStatusMap(update));
+    });
+  }, []);
 
   return (
     <LiveDataContext.Provider value={{ liveData }}>

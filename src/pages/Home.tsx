@@ -4,7 +4,8 @@ import { NodeGridContainer } from "@/components/sections/NodeGrid";
 import { NodeCompactContainer } from "@/components/sections/NodeCompact";
 import { NodeTable } from "@/components/sections/NodeTable";
 import Loading from "@/components/loading";
-import type { NodeData } from "@/types/node";
+import type { NodeWithStats } from "@/hooks/useNodeCommons";
+import type { StatsSnapshot, SortKey } from "@/components/sections/StatsBar/types";
 import { useNodeData } from "@/contexts/NodeDataContext";
 import { useAppConfig } from "@/config";
 import { useTheme } from "@/hooks/useTheme";
@@ -22,70 +23,57 @@ import { cn } from "@/utils";
 interface HomePageProps {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
-  filteredNodes: (NodeData & { stats?: any })[];
-  selectedGroup: string;
-  setSelectedGroup: (group: string) => void;
-  stats: any;
-  groups: string[];
-  handleSort: (key: any) => void;
+  filteredNodes: NodeWithStats[];
+  selectedTag: string;
+  setSelectedTag: (tag: string) => void;
+  stats: StatsSnapshot;
+  tags: string[];
+  handleSort: (key: SortKey, direction?: "asc" | "desc") => void;
 }
 
-const HomePage: React.FC<HomePageProps> = ({
+const HomePage = ({
   searchTerm,
   setSearchTerm,
   filteredNodes,
-  selectedGroup,
-  setSelectedGroup,
+  selectedTag,
+  setSelectedTag,
   stats,
-  groups,
+  tags,
   handleSort,
-}) => {
+}: HomePageProps) => {
   const { viewMode, statusCardsVisibility, setStatusCardsVisibility } =
     useTheme();
   const { loading, error, refreshNodes } = useNodeData();
   const {
-    enableGroupedBar,
+    enableTagsBar,
     enableStatsBar,
     enableSwap,
     enableListItemProgressBar,
-    selectTrafficProgressStyle,
     isShowStatsInHeader,
-    mergeGroupsWithStats,
+    mergeTagsWithStats,
   } = useAppConfig();
   const { t } = useLocale();
-
   const isMobile = useIsMobile();
-
   const hasSearchTerm = searchTerm.trim().length > 0;
 
-  if (loading) {
-    return <Loading text={t("homePage.loadingData")} />;
-  }
+  if (loading) return <Loading text={t("homePage.loadingData")} />;
 
   const renderContent = () => {
     if (viewMode === "grid") {
-      return (
-        <NodeGridContainer
-          nodes={filteredNodes}
-          enableSwap={enableSwap}
-          selectTrafficProgressStyle={selectTrafficProgressStyle}
-        />
-      );
+      return <NodeGridContainer nodes={filteredNodes} enableSwap={enableSwap} />;
     }
     if (viewMode === "compact") {
-      return <NodeCompactContainer nodes={filteredNodes} />;
-    }
-    if (viewMode === "table") {
       return (
-        <NodeTable
-          nodes={filteredNodes}
-          enableSwap={enableSwap}
-          enableListItemProgressBar={enableListItemProgressBar}
-          selectTrafficProgressStyle={selectTrafficProgressStyle}
-        />
+        <NodeCompactContainer nodes={filteredNodes} enableSwap={enableSwap} />
       );
     }
-    return null;
+    return (
+      <NodeTable
+        nodes={filteredNodes}
+        enableSwap={enableSwap}
+        enableListItemProgressBar={enableListItemProgressBar}
+      />
+    );
   };
 
   return (
@@ -97,24 +85,24 @@ const HomePage: React.FC<HomePageProps> = ({
           stats={stats}
           loading={loading}
           isShowStatsInHeader={isShowStatsInHeader}
-          enableGroupedBar={enableGroupedBar}
-          groups={groups}
-          selectedGroup={selectedGroup}
-          onSelectGroup={setSelectedGroup}
+          enableTagsBar={enableTagsBar}
+          tags={tags}
+          selectedTag={selectedTag}
+          onSelectTag={setSelectedTag}
           onSort={handleSort}
         />
       )}
 
-      {enableGroupedBar && !mergeGroupsWithStats && (
-        <div className="flex purcarte-blur theme-card-style overflow-auto whitespace-nowrap overflow-x-auto items-center min-w-[300px] text-primary space-x-4 px-4 my-4">
-          <span>{t("group.name")}</span>
-          {groups?.map((group: string) => (
+      {enableTagsBar && !mergeTagsWithStats && (
+        <div className="flex purcarte-blur theme-card-style overflow-auto whitespace-nowrap items-center min-w-[300px] text-primary space-x-4 px-4 my-4">
+          <span>{t("tag.name")}</span>
+          {tags.map((tag) => (
             <Button
-              key={group}
-              variant={selectedGroup === group ? "secondary" : "ghost"}
+              key={tag}
+              variant={selectedTag === tag ? "secondary" : "ghost"}
               size="sm"
-              onClick={() => setSelectedGroup?.(group)}>
-              {group}
+              onClick={() => setSelectedTag(tag)}>
+              {tag}
             </Button>
           ))}
         </div>
@@ -139,7 +127,7 @@ const HomePage: React.FC<HomePageProps> = ({
                     ? t("search.tryChangingFilters")
                     : error
                     ? t("homePage.retryFetchingNodes")
-                    : t("homePage.addNodesInAdmin")}
+                    : t("homePage.waitingForData")}
                 </CardDescription>
               </CardHeader>
               <CardFooter>
@@ -147,19 +135,9 @@ const HomePage: React.FC<HomePageProps> = ({
                   <Button onClick={() => setSearchTerm("")} className="w-full">
                     {t("search.clear")}
                   </Button>
-                ) : error ? (
-                  <Button
-                    onClick={() => void refreshNodes()}
-                    className="w-full">
-                    {t("search.retry")}
-                  </Button>
                 ) : (
-                  <Button
-                    onClick={() =>
-                      window.open("/admin", "_blank", "noopener,noreferrer")
-                    }
-                    className="w-full">
-                    {t("homePage.addNode")}
+                  <Button onClick={refreshNodes} className="w-full">
+                    {t("search.retry")}
                   </Button>
                 )}
               </CardFooter>

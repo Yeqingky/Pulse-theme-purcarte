@@ -6,110 +6,50 @@ import {
   useContext,
   type ReactNode,
 } from "react";
-import { apiService } from "../services/api";
-import type { NodeData } from "../types/node";
+import { pulseEventService, pulseUpdateToNodes } from "@/services/pulse";
+import type { NodeData } from "@/types/pulse";
 
-// The core logic from the original useNodeData.ts, now kept internal to this file.
 function useNodesInternal() {
-  const [staticNodes, setStaticNodes] = useState<NodeData[]>([]);
+  const [nodes, setNodes] = useState<NodeData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchNodes = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const nodeData = await apiService.getNodes();
-      const sortedNodes = nodeData.sort((a, b) => a.weight - b.weight);
-      setStaticNodes(sortedNodes);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "获取节点数据失败");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const refreshNodes = useCallback(async () => {
-    await fetchNodes();
-  }, [fetchNodes]);
-
   useEffect(() => {
-    fetchNodes();
-  }, [fetchNodes]);
+    const unsubscribeSnapshot = pulseEventService.subscribe((update) => {
+      setNodes(pulseUpdateToNodes(update));
+      setLoading(false);
+      setError(null);
+    });
+    const unsubscribeStatus = pulseEventService.subscribeStatus((status) => {
+      if (status.state === "error") {
+        setError(status.error || "Pulse SSE 连接失败");
+      } else if (status.state === "open") {
+        setError(null);
+      }
+    });
 
-  const getNodeDetails = useCallback(async (uuid: string) => {
-    try {
-      const recentStats = await apiService.getNodeRecentStats(uuid);
-      return { recentStats };
-    } catch (err) {
-      console.error("Failed to fetch node recent stats:", err);
-      return null;
-    }
+    return () => {
+      unsubscribeSnapshot();
+      unsubscribeStatus();
+    };
   }, []);
 
-  const getLoadHistory = useCallback(
-    async (uuid: string, hours: number = 24) => {
-      try {
-        const loadHistory = await apiService.getLoadHistory(uuid, hours);
-        return loadHistory;
-      } catch (err) {
-        console.error("Failed to fetch load history:", err);
-        return null;
-      }
-    },
-    []
-  );
-
-  const getPingHistory = useCallback(
-    async (uuid: string, hours: number = 24) => {
-      try {
-        const pingHistory = await apiService.getPingHistory(uuid, hours);
-        return pingHistory;
-      } catch (err) {
-        console.error("Failed to fetch ping history:", err);
-        return null;
-      }
-    },
-    []
-  );
-
-  const getRecentLoadHistory = useCallback(async (uuid: string) => {
-    try {
-      const recentStats = await apiService.getNodeRecentStats(uuid);
-      if (!recentStats) return null;
-
-      return { count: recentStats.length, records: recentStats };
-    } catch (err) {
-      console.error("Failed to fetch recent load history:", err);
-      return null;
-    }
+  const refreshNodes = useCallback(() => {
+    pulseEventService.reconnect();
   }, []);
 
-  const getNodesByGroup = useCallback(
-    (group: string) => {
-      return staticNodes.filter((node) => node.group === group);
-    },
-    [staticNodes]
-  );
-
-  const getGroups = useCallback(() => {
-    return Array.from(
-      new Set(staticNodes.map((node) => node.group).filter(Boolean))
+  const getTags = useCallback(() => {
+    return Array.from(new Set(nodes.flatMap((node) => node.tags))).sort(
+      (a, b) => a.localeCompare(b)
     );
-  }, [staticNodes]);
+  }, [nodes]);
 
   return {
-    nodes: staticNodes,
+    nodes,
     loading,
     error,
     refreshNodes,
-    getNodeDetails,
-    getLoadHistory,
-    getPingHistory,
-    getRecentLoadHistory,
-    getNodesByGroup,
-    getGroups,
+    getTags,
   };
 }
 

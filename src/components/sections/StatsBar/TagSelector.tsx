@@ -8,19 +8,19 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Layers } from "lucide-react";
+import { Tags } from "lucide-react";
 import { cn } from "@/utils";
 import type { StatsBarProps } from "./types";
 import { useLocale } from "@/config/hooks";
 
-export const GroupSelector = memo(
+export const TagSelector = memo(
   ({
-    groups,
-    selectedGroup,
-    onSelectGroup,
-  }: Pick<StatsBarProps, "groups" | "selectedGroup" | "onSelectGroup">) => {
+    tags,
+    selectedTag,
+    onSelectTag,
+  }: Pick<StatsBarProps, "tags" | "selectedTag" | "onSelectTag">) => {
     const { t } = useLocale();
-    if (!groups?.length || !onSelectGroup) return null;
+    if (!tags?.length || !onSelectTag) return null;
 
     return (
       <DropdownMenu modal={false}>
@@ -29,22 +29,22 @@ export const GroupSelector = memo(
             variant="default"
             size="sm"
             className="h-7 shrink-0 rounded-full px-2 text-xs font-semibold">
-            <Layers className="mr-1.5 h-3.5 w-3.5" />
-            {selectedGroup}
+            <Tags className="mr-1.5 h-3.5 w-3.5" />
+            {selectedTag}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="center">
-          <DropdownMenuLabel>{t("group.selectTitle")}</DropdownMenuLabel>
+          <DropdownMenuLabel>{t("tag.selectTitle")}</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          {groups.map((group) => (
+          {tags.map((tag) => (
             <DropdownMenuItem
-              key={group}
+              key={tag}
               className={cn(
                 "cursor-pointer text-sm",
-                selectedGroup === group && "bg-secondary/30 font-semibold"
+                selectedTag === tag && "bg-secondary/30 font-semibold"
               )}
-              onSelect={() => onSelectGroup(group)}>
-              {group}
+              onSelect={() => onSelectTag(tag)}>
+              {tag}
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>

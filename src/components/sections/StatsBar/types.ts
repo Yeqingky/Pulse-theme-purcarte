@@ -28,10 +28,10 @@ export interface StatsBarProps {
   setDisplayOptions: (options: Partial<DisplayOptions>) => void;
   stats: StatsSnapshot;
   loading: boolean;
-  enableGroupedBar?: boolean;
-  groups?: string[];
-  selectedGroup?: string;
-  onSelectGroup?: (group: string) => void;
+  enableTagsBar?: boolean;
+  tags?: string[];
+  selectedTag?: string;
+  onSelectTag?: (tag: string) => void;
   isShowStatsInHeader?: boolean;
   onSort?: (key: SortKey, direction: "asc" | "desc") => void;
   sortKey?: SortKey;

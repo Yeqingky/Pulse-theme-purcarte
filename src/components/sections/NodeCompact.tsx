@@ -1,57 +1,45 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatBytes, formatUptime, getOSImage } from "@/utils";
-import type { NodeData } from "@/types/node";
-import { Link } from "react-router-dom";
+import type { NodeData } from "@/types/pulse";
 import {
   CpuIcon,
   MemoryStickIcon,
   HardDriveIcon,
-  ZapIcon,
   ArrowUpDownIcon,
   GaugeIcon,
-  Info,
 } from "lucide-react";
 import Flag from "./Flag";
 import { Tag } from "../ui/tag";
 import { useNodeCommons } from "@/hooks/useNodeCommons";
 import { useLocale } from "@/config/hooks";
-import { NodeDisplayContainer } from "./NodeDisplay";
 
 interface NodeCompactContainerProps {
   nodes: NodeData[];
+  enableSwap: boolean;
 }
 
-export const NodeCompactContainer = ({ nodes }: NodeCompactContainerProps) => {
-  return (
-    <NodeDisplayContainer nodes={nodes}>
-      {(node, onShowDetails) => (
-        <NodeCompact
-          key={node.uuid}
-          node={node}
-          onShowDetails={onShowDetails}
-        />
-      )}
-    </NodeDisplayContainer>
-  );
-};
+export const NodeCompactContainer = ({
+  nodes,
+  enableSwap,
+}: NodeCompactContainerProps) => (
+  <div className="grid grid-cols-[repeat(auto-fill,minmax(18rem,1fr))] gap-4">
+    {nodes.map((node) => (
+      <NodeCompact key={node.uuid} node={node} enableSwap={enableSwap} />
+    ))}
+  </div>
+);
 
 interface NodeCompactProps {
   node: NodeData;
-  onShowDetails: () => void;
+  enableSwap: boolean;
 }
 
-export const NodeCompact = ({ node, onShowDetails }: NodeCompactProps) => {
-  const {
-    stats,
-    isOnline,
-    tagList,
-    cpuUsage,
-    memUsage,
-    diskUsage,
-    load,
-    expired_at,
-  } = useNodeCommons(node);
+export const NodeCompact = ({ node, enableSwap }: NodeCompactProps) => {
+  const { stats, isOnline, tagList, cpuUsage, memUsage, swapUsage, diskUsage } =
+    useNodeCommons(node);
   const { t } = useLocale();
+  const formatCurrent = (value: number | undefined, isSpeed = false) =>
+    stats ? formatBytes(value || 0, isSpeed) : t("node.notAvailable");
 
   return (
     <Card
@@ -61,29 +49,25 @@ export const NodeCompact = ({ node, onShowDetails }: NodeCompactProps) => {
           : "striped-bg-red-translucent-diagonal ring-2 ring-red-500/50"
       }`}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
-        <Link
-          to={`/instance/${node.uuid}`}
-          className="hover:underline hover:text-(--accent-11)">
-          <div className="flex items-center gap-2">
-            <Flag flag={node.region} size={"4"}></Flag>
-            <img
-              src={getOSImage(node.os)}
-              alt={node.os}
-              className="size-4 object-contain"
-              loading="lazy"
-            />
-            <CardTitle className="text-sm font-bold">{node.name}</CardTitle>
-          </div>
-        </Link>
-        <button onClick={onShowDetails}>
-          <Info className="size-4" />
-        </button>
+        <div className="flex items-center gap-2 min-w-0">
+          <Flag flag={node.region} size="4" />
+          <img
+            src={getOSImage(node.os)}
+            alt={node.os}
+            className="size-4 object-contain"
+            loading="lazy"
+          />
+          <CardTitle className="text-sm font-bold truncate">
+            {node.name}
+          </CardTitle>
+        </div>
+        <span className={isOnline ? "text-green-600" : "text-red-500"}>
+          {isOnline ? t("node.online") : t("node.offline")}
+        </span>
       </CardHeader>
       <CardContent className="flex-grow space-y-1 text-xs flex-shrink-0">
-        <div className="flex flex-wrap gap-1">
-          <Tag tags={tagList} />
-        </div>
-        <div className="border-t border-(--accent-4)/50 my-1"></div>
+        <Tag tags={tagList} />
+        <div className="border-t border-(--accent-4)/50 my-1" />
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1">
             <CpuIcon className="size-4 text-blue-600" />
@@ -93,13 +77,17 @@ export const NodeCompact = ({ node, onShowDetails }: NodeCompactProps) => {
             <MemoryStickIcon className="size-4 text-green-600" />
             <span>{memUsage.toFixed(0)}%</span>
           </div>
+          {enableSwap && (
+            <div className="flex items-center gap-1">
+              <MemoryStickIcon className="size-4 text-purple-600" />
+              <span>
+                {node.swap_total > 0 ? `${swapUsage.toFixed(0)}%` : t("node.off")}
+              </span>
+            </div>
+          )}
           <div className="flex items-center gap-1">
             <HardDriveIcon className="size-4 text-red-600" />
             <span>{diskUsage.toFixed(0)}%</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <ZapIcon className="size-4 text-yellow-600" />
-            <span>{load}</span>
           </div>
         </div>
         <div className="flex grid grid-cols-2">
@@ -107,16 +95,10 @@ export const NodeCompact = ({ node, onShowDetails }: NodeCompactProps) => {
             <GaugeIcon className="size-5 text-(--accent-11) mr-2" />
             <div>
               <div>
-                {t("node.uploadPrefix")}{" "}
-                {stats
-                  ? formatBytes(stats.net_out, true)
-                  : t("node.notAvailable")}
+                {t("node.uploadPrefix")} {formatCurrent(stats?.net_out, true)}
               </div>
               <div>
-                {t("node.downloadPrefix")}{" "}
-                {stats
-                  ? formatBytes(stats.net_in, true)
-                  : t("node.notAvailable")}
+                {t("node.downloadPrefix")} {formatCurrent(stats?.net_in, true)}
               </div>
             </div>
           </div>
@@ -124,34 +106,18 @@ export const NodeCompact = ({ node, onShowDetails }: NodeCompactProps) => {
             <ArrowUpDownIcon className="size-5 text-(--accent-11) mr-2" />
             <div>
               <div>
-                {t("node.uploadPrefix")}{" "}
-                {stats
-                  ? formatBytes(stats.net_total_up)
-                  : t("node.notAvailable")}
+                {t("node.uploadPrefix")} {formatCurrent(stats?.net_total_up)}
               </div>
               <div>
-                {t("node.downloadPrefix")}{" "}
-                {stats
-                  ? formatBytes(stats.net_total_down)
-                  : t("node.notAvailable")}
+                {t("node.downloadPrefix")} {formatCurrent(stats?.net_total_down)}
               </div>
             </div>
           </div>
         </div>
-        <div className="flex grid grid-cols-2">
-          <span className="col-span-1">
-            <span className="mr-1">{t("node.expiredAt")}</span>
-            <span>{expired_at}</span>
-          </span>
-          <span className="col-span-1">
-            {isOnline && stats ? (
-              <>
-                <span className="mr-1">{t("node.uptime")}</span>
-                <span>{formatUptime(stats.uptime)}</span>
-              </>
-            ) : (
-              t("node.offline")
-            )}
+        <div className="flex items-center justify-between">
+          <span>{t("node.uptime")}</span>
+          <span>
+            {isOnline && stats ? formatUptime(stats.uptime) : t("node.offline")}
           </span>
         </div>
       </CardContent>

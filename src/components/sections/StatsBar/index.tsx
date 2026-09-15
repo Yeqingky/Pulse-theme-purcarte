@@ -3,7 +3,7 @@ import { cn, formatBytes } from "@/utils";
 import { useAppConfig } from "@/config";
 import { useIsMobile } from "@/hooks/useMobile";
 import { CurrentTimeChip, StatChip } from "./StatChips";
-import { GroupSelector } from "./GroupSelector";
+import { TagSelector } from "./TagSelector";
 import { SortToggleMenu } from "./SortToggleMenu";
 import { StatsToggleMenu } from "./StatsToggleMenu";
 import { useLocale } from "@/config/hooks";
@@ -25,9 +25,9 @@ export const StatsBar = (props: StatsBarProps) => {
     setDisplayOptions,
     stats,
     loading,
-    groups,
-    selectedGroup,
-    onSelectGroup,
+    tags,
+    selectedTag,
+    onSelectTag,
     onSort: onSortProp,
     sortKey: sortKeyProp,
     sortDirection: sortDirectionProp,
@@ -56,15 +56,13 @@ export const StatsBar = (props: StatsBarProps) => {
       newDirection = sortDirection === "desc" ? "asc" : "desc";
     }
     setSortState({ key, direction: newDirection });
-    if (onSortProp) {
-      onSortProp(key, newDirection);
-    }
+    onSortProp?.(key, newDirection);
   };
 
   const {
     isShowStatsInHeader,
-    mergeGroupsWithStats,
-    enableGroupedBar,
+    mergeTagsWithStats,
+    enableTagsBar,
     enableSortControl,
   } = useAppConfig();
   const isMobile = useIsMobile();
@@ -119,11 +117,13 @@ export const StatsBar = (props: StatsBarProps) => {
           ? ["..."]
           : [
               `${t("node.uploadPrefix")} ${formatBytes(
-                stats.currentSpeedUp
-              )}/s`,
+                stats.currentSpeedUp,
+                true
+              )}`,
               `${t("node.downloadPrefix")} ${formatBytes(
-                stats.currentSpeedDown
-              )}/s`,
+                stats.currentSpeedDown,
+                true
+              )}`,
             ],
         isLabelVertical: !isMobile && isShowStatsInHeader,
         textLeft: true,
@@ -137,11 +137,11 @@ export const StatsBar = (props: StatsBarProps) => {
   if (isShowStatsInHeader && !isMobile) {
     return (
       <div className="flex items-center gap-2">
-        {enableGroupedBar && mergeGroupsWithStats && (
-          <GroupSelector
-            groups={groups}
-            selectedGroup={selectedGroup}
-            onSelectGroup={onSelectGroup}
+        {enableTagsBar && mergeTagsWithStats && (
+          <TagSelector
+            tags={tags}
+            selectedTag={selectedTag}
+            onSelectTag={onSelectTag}
           />
         )}
         <div className="flex items-center gap-1.5">
@@ -173,14 +173,11 @@ export const StatsBar = (props: StatsBarProps) => {
   }
 
   const getGridTemplateColumns = () => {
-    if (!isMobile) {
-      return "repeat(auto-fit, minmax(100px, 1fr))";
-    }
+    if (!isMobile) return "repeat(auto-fit, minmax(100px, 1fr))";
     const visibleCount =
       resolvedStats.length +
       (displayOptions.currentTime ? 1 : 0) +
-      (enableGroupedBar && mergeGroupsWithStats ? 1 : 0);
-
+      (enableTagsBar && mergeTagsWithStats ? 1 : 0);
     return visibleCount >= 5 ? "repeat(3, 1fr)" : "repeat(2, 1fr)";
   };
 
@@ -196,21 +193,19 @@ export const StatsBar = (props: StatsBarProps) => {
           gridTemplateColumns: getGridTemplateColumns(),
           gridAutoRows: "min-content",
         }}>
-        {enableGroupedBar && mergeGroupsWithStats && (
+        {enableTagsBar && mergeTagsWithStats && (
           <div className="flex flex-col items-center">
-            <GroupSelector
-              groups={groups}
-              selectedGroup={selectedGroup}
-              onSelectGroup={onSelectGroup}
+            <TagSelector
+              tags={tags}
+              selectedTag={selectedTag}
+              onSelectTag={onSelectTag}
             />
           </div>
         )}
 
         {hasVisibleStats ? (
           <>
-            {displayOptions.currentTime && (
-              <CurrentTimeChip isMobile={isMobile} />
-            )}
+            {displayOptions.currentTime && <CurrentTimeChip isMobile={isMobile} />}
             {resolvedStats.map(({ key, ...rest }) => (
               <StatChip key={key} {...rest} isMobile={isMobile} />
             ))}
@@ -221,21 +216,19 @@ export const StatsBar = (props: StatsBarProps) => {
           </span>
         )}
       </div>
-      <div className="absolute right-2 top-2">
+      <div className="absolute right-2 top-2 flex items-center gap-1">
         <StatsToggleMenu
           displayOptions={displayOptions}
           setDisplayOptions={setDisplayOptions}
         />
-      </div>
-      {enableSortControl && (
-        <div className="absolute right-2">
+        {enableSortControl && (
           <SortToggleMenu
             onSort={handleSort}
             sortKey={sortKey}
             sortDirection={sortDirection}
           />
-        </div>
-      )}
+        )}
+      </div>
     </Card>
   );
 };

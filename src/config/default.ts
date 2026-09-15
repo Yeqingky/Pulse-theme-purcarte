@@ -1,103 +1,3 @@
-// 配置类型定义
-export interface ConfigOptions {
-  isShowConfigEditButtonInLogined: boolean; // 是否在登录时显示配置编辑按钮
-  mainWidth: number; // 主内容宽度百分比
-  backgroundImage: string; // 桌面端背景图片URL
-  backgroundImageMobile: string; // 移动端背景图片URL
-  enableVideoBackground: boolean; // 是否启用视频背景
-  videoBackgroundUrl: string; // 桌面端视频背景URL
-  videoBackgroundUrlMobile: string; // 移动端视频背景URL
-  backgroundAlignment: string; // 背景对齐方式
-  blurValue: number; // 磨砂玻璃模糊值
-  blurBackgroundColor: string; // 磨砂玻璃背景颜色
-  enableTransparentTags: boolean; // 是否启用标签透明背景
-  tagDefaultColorList: string; // 标签默认颜色列表
-  selectThemeColor: ColorType; // 默认主题颜色
-  enableLocalStorage: boolean; // 是否启用本地存储
-  selectedDefaultView: ViewModeType; // 默认视图模式
-  selectedDefaultAppearance: AppearanceType; // 默认外观模式
-  statusCardsVisibility: string; // 状态卡片显示控制
-  selectedHeaderStyle: HeaderStyle; // 标题栏样式
-  enableLogo: boolean; // 是否启用Logo
-  logoUrl: string; // Logo图片URL
-  enableTitle: boolean; // 是否启用标题
-  titleText: string; // 标题文本
-  enableSearchButton: boolean; // 是否启用搜索按钮
-  enableAdminButton: boolean; // 是否启用管理员按钮
-  selectedFooterStyle: FooterStyle; // 页脚样式
-  enableJsonRPC2Api: boolean; // 是否启用 JSON-RPC2 API 适配
-  isShowStatsInHeader: boolean; // 是否在标题栏中显示统计信息
-  mergeGroupsWithStats: boolean; // 是否在统计栏中合并分组
-  enableStatsBar: boolean; // 是否启用统计栏
-  enableSortControl: boolean; // 是否启用排序控制
-  isOfflineNodesBehind: boolean; // 是否启用离线节点置后显示
-  enableGroupedBar: boolean; // 是否启用分组栏
-  defaultSelectedGroup: string; // 默认选择展示分组
-  selectMobileDefaultView: ViewModeType; // 移动端默认展示视图
-  enableSwap: boolean; // 是否启用SWAP显示
-  pingChartTimeInPreview: number; // 预览详情的延迟图表时间范围，单位为小时
-  enableInstanceDetail: boolean; // 是否启用实例详情
-  enablePingChart: boolean; // 是否启用延迟图表
-  enableConnectBreaks: boolean; // 是否启用连接断点
-  pingChartMaxPoints: number; // 延迟图表最大点数
-  isShowHWBarInCard: boolean; // 是否在卡片中显示硬件信息栏
-  isShowValueUnderProgressBar: boolean; // 是否在流量进度条下方显示数值
-  selectTrafficProgressStyle: "circular" | "linear"; // 流量进度条样式
-  enableListItemProgressBar: boolean; // 是否启用列表视图进度条
-  customTexts: string; // 自定义UI文本
-}
-
-// 默认配置值
-export const DEFAULT_CONFIG: ConfigOptions = {
-  isShowConfigEditButtonInLogined: true,
-  mainWidth: 85,
-  backgroundImage: "/assets/Moonlit-Scenery.webp",
-  backgroundImageMobile: "",
-  enableVideoBackground: false,
-  videoBackgroundUrl: "/assets/LanternRivers_1080p15fps2Mbps3s.mp4",
-  videoBackgroundUrlMobile: "",
-  backgroundAlignment: "cover,top",
-  blurValue: 10,
-  blurBackgroundColor: "rgba(255, 255, 255, 0.5)|rgba(0, 0, 0, 0.5)",
-  enableTransparentTags: true,
-  tagDefaultColorList:
-    "ruby,gray,gold,bronze,brown,yellow,amber,orange,tomato,red",
-  selectThemeColor: "violet",
-  enableLocalStorage: true,
-  selectedDefaultView: "grid",
-  selectedDefaultAppearance: "system",
-  statusCardsVisibility:
-    "currentTime:true,currentOnline:true,regionOverview:true,trafficOverview:true,networkSpeed:true",
-  selectedHeaderStyle: "fixed",
-  enableLogo: false,
-  logoUrl: "/assets/logo.png",
-  enableTitle: true,
-  titleText: "Komari",
-  enableSearchButton: true,
-  enableAdminButton: true,
-  selectedFooterStyle: "fixed",
-  enableJsonRPC2Api: false,
-  isShowStatsInHeader: false,
-  mergeGroupsWithStats: false,
-  enableStatsBar: true,
-  enableSortControl: false,
-  isOfflineNodesBehind: false,
-  enableGroupedBar: true,
-  defaultSelectedGroup: "",
-  selectMobileDefaultView: "grid",
-  enableSwap: true,
-  pingChartTimeInPreview: 1,
-  enableInstanceDetail: true,
-  enablePingChart: true,
-  enableConnectBreaks: false,
-  pingChartMaxPoints: 0,
-  isShowHWBarInCard: true,
-  isShowValueUnderProgressBar: false,
-  selectTrafficProgressStyle: "linear",
-  enableListItemProgressBar: true,
-  customTexts: "",
-};
-// 定义颜色类型
 export type ColorType =
   | "ruby"
   | "gray"
@@ -125,6 +25,7 @@ export type ColorType =
   | "lime"
   | "mint"
   | "sky";
+
 export const allColors: ColorType[] = [
   "ruby",
   "gray",
@@ -158,12 +59,171 @@ export type AppearanceType = "light" | "dark" | "system";
 export const allAppearance: AppearanceType[] = ["light", "dark", "system"];
 
 export type ViewModeType = "grid" | "table" | "compact";
-
-export type SiteStatus =
-  | "public"
-  | "private-unauthenticated"
-  | "private-authenticated"
-  | "authenticated";
+const allViews: ViewModeType[] = ["grid", "table", "compact"];
 
 export type HeaderStyle = "fixed" | "levitation";
 export type FooterStyle = "fixed" | "levitation" | "followContent" | "hidden";
+const allHeaderStyles: HeaderStyle[] = ["fixed", "levitation"];
+const allFooterStyles: FooterStyle[] = [
+  "fixed",
+  "levitation",
+  "followContent",
+  "hidden",
+];
+
+export interface ConfigOptions {
+  mainWidth: number;
+  backgroundImage: string;
+  backgroundImageMobile: string;
+  enableVideoBackground: boolean;
+  videoBackgroundUrl: string;
+  videoBackgroundUrlMobile: string;
+  backgroundAlignment: string;
+  blurValue: number;
+  blurBackgroundColor: string;
+  enableTransparentTags: boolean;
+  tagDefaultColorList: string;
+  selectThemeColor: ColorType;
+  enableLocalStorage: boolean;
+  selectedDefaultView: ViewModeType;
+  selectedDefaultAppearance: AppearanceType;
+  statusCardsVisibility: string;
+  selectedHeaderStyle: HeaderStyle;
+  enableLogo: boolean;
+  logoUrl: string;
+  enableTitle: boolean;
+  titleText: string;
+  enableSearchButton: boolean;
+  selectedFooterStyle: FooterStyle;
+  isShowStatsInHeader: boolean;
+  mergeTagsWithStats: boolean;
+  enableStatsBar: boolean;
+  enableSortControl: boolean;
+  isOfflineNodesBehind: boolean;
+  enableTagsBar: boolean;
+  defaultSelectedTag: string;
+  selectMobileDefaultView: ViewModeType;
+  enableSwap: boolean;
+  isShowHWBarInCard: boolean;
+  isShowValueUnderProgressBar: boolean;
+  enableListItemProgressBar: boolean;
+  customTexts: string;
+}
+
+const readEnv = (key: string): string | undefined => {
+  const value = import.meta.env[key];
+  return typeof value === "string" && value.trim() ? value.trim() : undefined;
+};
+
+const readBoolean = (key: string, fallback: boolean): boolean => {
+  const value = readEnv(key)?.toLowerCase();
+  if (value === "true" || value === "1" || value === "yes") return true;
+  if (value === "false" || value === "0" || value === "no") return false;
+  return fallback;
+};
+
+const readNumber = (
+  key: string,
+  fallback: number,
+  minimum?: number,
+  maximum?: number
+): number => {
+  const parsed = Number(readEnv(key));
+  if (!Number.isFinite(parsed)) return fallback;
+  if (minimum !== undefined && parsed < minimum) return fallback;
+  if (maximum !== undefined && parsed > maximum) return fallback;
+  return parsed;
+};
+
+const readEnum = <T extends string>(
+  key: string,
+  fallback: T,
+  values: readonly T[]
+): T => {
+  const value = readEnv(key) as T | undefined;
+  return value && values.includes(value) ? value : fallback;
+};
+
+const defaultStatusCards =
+  "currentTime:true,currentOnline:true,regionOverview:true,trafficOverview:true,networkSpeed:true";
+
+export const PULSE_EVENTS_URL =
+  readEnv("VITE_PULSE_EVENTS_URL") ||
+  "https://idc-tz.yeqing.dev/api/events";
+export const PULSE_SHARE_TOKEN = readEnv("VITE_PULSE_SHARE_TOKEN") || "";
+export const PULSE_WITH_CREDENTIALS = readBoolean(
+  "VITE_PULSE_WITH_CREDENTIALS",
+  false
+);
+export const PULSE_RECONNECT_DELAY = readNumber(
+  "VITE_PULSE_RECONNECT_DELAY",
+  3000,
+  1000,
+  60000
+);
+export const SITE_DESCRIPTION =
+  readEnv("VITE_SITE_DESCRIPTION") || "Pulse server monitoring dashboard.";
+
+export const DEFAULT_CONFIG: ConfigOptions = {
+  mainWidth: readNumber("VITE_MAIN_WIDTH", 85, 40, 100),
+  backgroundImage:
+    readEnv("VITE_BACKGROUND_IMAGE") || "/assets/Moonlit-Scenery.webp",
+  backgroundImageMobile: readEnv("VITE_BACKGROUND_IMAGE_MOBILE") || "",
+  enableVideoBackground: readBoolean("VITE_ENABLE_VIDEO_BACKGROUND", false),
+  videoBackgroundUrl:
+    readEnv("VITE_VIDEO_BACKGROUND_URL") ||
+    "/assets/LanternRivers_1080p15fps2Mbps3s.mp4",
+  videoBackgroundUrlMobile:
+    readEnv("VITE_VIDEO_BACKGROUND_URL_MOBILE") || "",
+  backgroundAlignment:
+    readEnv("VITE_BACKGROUND_ALIGNMENT") || "cover,top",
+  blurValue: readNumber("VITE_BLUR_VALUE", 10, 0, 100),
+  blurBackgroundColor:
+    readEnv("VITE_BLUR_BACKGROUND_COLOR") ||
+    "rgba(255, 255, 255, 0.5)|rgba(0, 0, 0, 0.5)",
+  enableTransparentTags: readBoolean("VITE_ENABLE_TRANSPARENT_TAGS", true),
+  tagDefaultColorList:
+    readEnv("VITE_TAG_DEFAULT_COLOR_LIST") ||
+    "ruby,gray,gold,bronze,brown,yellow,amber,orange,tomato,red",
+  selectThemeColor: readEnum("VITE_THEME_COLOR", "violet", allColors),
+  enableLocalStorage: readBoolean("VITE_ENABLE_LOCAL_STORAGE", true),
+  selectedDefaultView: readEnum("VITE_DEFAULT_VIEW", "grid", allViews),
+  selectedDefaultAppearance: readEnum(
+    "VITE_DEFAULT_APPEARANCE",
+    "system",
+    allAppearance
+  ),
+  statusCardsVisibility:
+    readEnv("VITE_STATUS_CARDS_VISIBILITY") || defaultStatusCards,
+  selectedHeaderStyle: readEnum(
+    "VITE_HEADER_STYLE",
+    "fixed",
+    allHeaderStyles
+  ),
+  enableLogo: readBoolean("VITE_ENABLE_LOGO", false),
+  logoUrl: readEnv("VITE_LOGO_URL") || "/assets/logo.png",
+  enableTitle: readBoolean("VITE_ENABLE_TITLE", true),
+  titleText: readEnv("VITE_SITE_TITLE") || "Pulse-theme-purcarte",
+  enableSearchButton: readBoolean("VITE_ENABLE_SEARCH", true),
+  selectedFooterStyle: readEnum("VITE_FOOTER_STYLE", "fixed", allFooterStyles),
+  isShowStatsInHeader: readBoolean("VITE_SHOW_STATS_IN_HEADER", false),
+  mergeTagsWithStats: readBoolean("VITE_MERGE_TAGS_WITH_STATS", false),
+  enableStatsBar: readBoolean("VITE_ENABLE_STATS_BAR", true),
+  enableSortControl: readBoolean("VITE_ENABLE_SORT_CONTROL", true),
+  isOfflineNodesBehind: readBoolean("VITE_OFFLINE_NODES_BEHIND", true),
+  enableTagsBar: readBoolean("VITE_ENABLE_TAGS_BAR", true),
+  defaultSelectedTag: readEnv("VITE_DEFAULT_TAG") || "",
+  selectMobileDefaultView: readEnum(
+    "VITE_MOBILE_DEFAULT_VIEW",
+    "grid",
+    allViews
+  ),
+  enableSwap: readBoolean("VITE_ENABLE_SWAP", true),
+  isShowHWBarInCard: readBoolean("VITE_SHOW_HARDWARE_BAR", true),
+  isShowValueUnderProgressBar: readBoolean(
+    "VITE_SHOW_VALUE_UNDER_PROGRESS",
+    false
+  ),
+  enableListItemProgressBar: readBoolean("VITE_ENABLE_LIST_PROGRESS", true),
+  customTexts: readEnv("VITE_CUSTOM_TEXTS") || "",
+};
