@@ -16,7 +16,7 @@
 默认 SSE 地址为:
 
 ```text
-https://idc-tz.yeqing.dev/api/events
+https://example.com/api/events
 ```
 
 复制 `.env.example` 为 `.env`, 然后按需修改 `VITE_*` 变量. Vite 会在构建时注入这些变量, 因此不要将私密 token 写入公开仓库.
@@ -25,7 +25,7 @@ https://idc-tz.yeqing.dev/api/events
 
 | 变量 | 默认值 | 说明 |
 | --- | --- | --- |
-| `VITE_PULSE_EVENTS_URL` | `https://idc-tz.yeqing.dev/api/events` | Pulse SSE 地址 |
+| `VITE_PULSE_EVENTS_URL` | `https://example.com/api/events` | Pulse SSE 地址 |
 | `VITE_PULSE_SHARE_TOKEN` | 空 | 可选共享 token, 会作为 `token` 查询参数附加 |
 | `VITE_PULSE_WITH_CREDENTIALS` | `false` | 是否携带跨域凭据 |
 | `VITE_PULSE_RECONNECT_DELAY` | `3000` | SSE 重连初始延迟, 单位为毫秒 |

@@ -149,7 +149,7 @@ const defaultStatusCards =
 
 export const PULSE_EVENTS_URL =
   readEnv("VITE_PULSE_EVENTS_URL") ||
-  "https://idc-tz.yeqing.dev/api/events";
+  "https://example.com/api/events";
 export const PULSE_SHARE_TOKEN = readEnv("VITE_PULSE_SHARE_TOKEN") || "";
 export const PULSE_WITH_CREDENTIALS = readBoolean(
   "VITE_PULSE_WITH_CREDENTIALS",
